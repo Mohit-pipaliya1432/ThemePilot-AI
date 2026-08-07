@@ -72,3 +72,30 @@ model AppSettings {
 
   @@index([shop])
 }
+
+model AIContentHistory {
+  id              Int      @id @default(autoincrement())
+  shop            String
+
+  productId       String
+  productTitle    String
+
+  version         Int
+
+  descriptionHtml String
+  seoTitle        String
+  seoDescription  String
+  altText         String
+  keywords        String
+
+  isCurrent       Boolean  @default(false)
+  restoredAt      DateTime?
+
+  createdAt       DateTime @default(now())
+
+  @@index([shop])
+  @@index([productId])
+  @@index([createdAt])
+  @@index([isCurrent])
+  @@unique([shop, productId, version])
+}

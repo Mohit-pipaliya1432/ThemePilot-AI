@@ -38,6 +38,10 @@ import {
   getAppSettings,
 } from "../services/settings/app-settings.server.js";
 
+import {
+  saveAIContentVersion,
+} from "../services/history/ai-history.server.js";
+
 import "../styles/dashboard.css";
 import "../styles/analytics.css";
 
@@ -117,18 +121,34 @@ export const action = async ({ request }) => {
       }
 
       const product = JSON.parse(productValue);
+      const result = await generateAIContent(
+        product,
+        {
+          mode: "generate",
+          settings,
+        },
+      );
 
-     const result = await generateAIContent(
-  product,
-  {
-    mode: "generate",
-    settings,
-  },
-);
+      let historyVersion = null;
+
+      try {
+        historyVersion =
+          await saveAIContentVersion({
+            shop: session.shop,
+            product,
+            content: result.content,
+          });
+      } catch (historyError) {
+        console.error(
+          "ThemePilot AI history save failed:",
+          historyError,
+        );
+      }
 
       return {
         ...result,
         product,
+        historyVersion,
       };
     }
 
@@ -164,18 +184,35 @@ export const action = async ({ request }) => {
           previousContent = null;
         }
       }
-
       const result = await generateAIContent(
-  product,
-  {
-    mode: "regenerate",
-    previousContent,
-    settings,
-  },
-);
+        product,
+        {
+          mode: "regenerate",
+          previousContent,
+          settings,
+        },
+      );
+
+      let historyVersion = null;
+
+      try {
+        historyVersion =
+          await saveAIContentVersion({
+            shop: session.shop,
+            product,
+            content: result.content,
+          });
+      } catch (historyError) {
+        console.error(
+          "ThemePilot AI history save failed:",
+          historyError,
+        );
+      }
+
       return {
         ...result,
         product,
+        historyVersion,
       };
     }
 

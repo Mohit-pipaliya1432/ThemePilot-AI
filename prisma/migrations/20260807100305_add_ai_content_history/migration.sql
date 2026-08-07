@@ -1,0 +1,26 @@
+-- CreateTable
+CREATE TABLE "AIContentHistory" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "shop" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "productTitle" TEXT NOT NULL,
+    "version" INTEGER NOT NULL,
+    "descriptionHtml" TEXT NOT NULL,
+    "seoTitle" TEXT NOT NULL,
+    "seoDescription" TEXT NOT NULL,
+    "altText" TEXT NOT NULL,
+    "keywords" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateIndex
+CREATE INDEX "AIContentHistory_shop_idx" ON "AIContentHistory"("shop");
+
+-- CreateIndex
+CREATE INDEX "AIContentHistory_productId_idx" ON "AIContentHistory"("productId");
+
+-- CreateIndex
+CREATE INDEX "AIContentHistory_createdAt_idx" ON "AIContentHistory"("createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AIContentHistory_shop_productId_version_key" ON "AIContentHistory"("shop", "productId", "version");

@@ -9,6 +9,10 @@ import {
   getAllScans,
 } from "../services/history/scan-history.server.js";
 
+import {
+  getAllAIContentHistory,
+} from "../services/history/ai-history.server.js";
+
 import "../styles/dashboard.css";
 import "../styles/analytics.css";
 
@@ -25,8 +29,14 @@ export const loader = async ({ request }) => {
       session.shop,
     );
 
+  const aiHistory =
+    await getAllAIContentHistory(
+      session.shop,
+    );
+
   return {
     scans,
+    aiHistory,
   };
 };
 
@@ -35,8 +45,10 @@ export const loader = async ({ request }) => {
 ========================================= */
 
 export default function AnalyticsPage() {
-  const { scans } =
-    useLoaderData();
+  const {
+    scans,
+    aiHistory,
+  } = useLoaderData();
 
   const validScans =
     Array.isArray(scans)
@@ -79,10 +91,25 @@ export default function AnalyticsPage() {
       </section>
 
       {validScans.length === 0 ? (
-        <EmptyAnalytics />
+        <>
+          <EmptyAnalytics />
+
+          <AIContentAnalytics
+            history={
+              Array.isArray(aiHistory)
+                ? aiHistory
+                : []
+            }
+          />
+        </>
       ) : (
         <AnalyticsDashboard
           scans={validScans}
+          aiHistory={
+            Array.isArray(aiHistory)
+              ? aiHistory
+              : []
+          }
         />
       )}
     </main>
@@ -133,6 +160,7 @@ function EmptyAnalytics() {
 
 function AnalyticsDashboard({
   scans,
+  aiHistory = [],
 }) {
   const scores =
     scans.map(
@@ -352,6 +380,10 @@ function AnalyticsDashboard({
           }
         />
       </div>
+
+      <AIContentAnalytics
+        history={aiHistory}
+      />
 
       {/* =====================================
           CHARTS
@@ -998,6 +1030,363 @@ function ProgressCard({
       </span>
     </article>
   );
+}
+
+/* =========================================
+   AI CONTENT ANALYTICS
+========================================= */
+
+function AIContentAnalytics({
+  history,
+}) {
+  const validHistory =
+    Array.isArray(history)
+      ? history
+      : [];
+
+  const totalVersions =
+    validHistory.length;
+
+  const productIds =
+    new Set(
+      validHistory.map(
+        (item) =>
+          item.productId,
+      ),
+    );
+
+  const productsImproved =
+    productIds.size;
+
+  const averageVersions =
+    productsImproved > 0
+      ? (
+          totalVersions /
+          productsImproved
+        ).toFixed(1)
+      : "0";
+
+  const sortedHistory =
+    [...validHistory].sort(
+      (a, b) =>
+        new Date(b.createdAt) -
+        new Date(a.createdAt),
+    );
+
+  const latestActivity =
+    sortedHistory[0] ||
+    null;
+
+  const productVersionCounts =
+    new Map();
+
+  for (
+    const item of
+    validHistory
+  ) {
+    const key =
+      item.productId;
+
+    const existing =
+      productVersionCounts.get(
+        key,
+      ) || {
+        productTitle:
+          item.productTitle ||
+          "Product",
+        count: 0,
+      };
+
+    existing.count += 1;
+
+    productVersionCounts.set(
+      key,
+      existing,
+    );
+  }
+
+  const mostActiveProduct =
+    [
+      ...productVersionCounts.values(),
+    ].sort(
+      (a, b) =>
+        b.count - a.count,
+    )[0] || null;
+
+  const lastSevenDays =
+    buildAIActivityDays(
+      validHistory,
+      7,
+    );
+
+  return (
+    <section className="tp-analytics-progress-section">
+      <div className="tp-table-heading">
+        <div>
+          <p className="tp-analytics__eyebrow">
+            AI ACTIVITY
+          </p>
+
+          <h2 className="tp-section-heading tp-section-heading--compact">
+            AI content analytics
+          </h2>
+
+          <p className="tp-section-subtitle">
+            Track generated content versions
+            and product-level AI activity.
+          </p>
+        </div>
+
+        <span className="tp-count-badge">
+          {totalVersions}{" "}
+          {totalVersions === 1
+            ? "version"
+            : "versions"}
+        </span>
+      </div>
+
+      <div className="tp-analytics-stats">
+        <AnalyticsStatCard
+          label="AI versions generated"
+          value={totalVersions}
+          description="Total saved AI content versions"
+          status={
+            totalVersions > 0
+              ? "good"
+              : "neutral"
+          }
+        />
+
+        <AnalyticsStatCard
+          label="Products improved"
+          value={productsImproved}
+          description="Unique products with saved AI content"
+          status={
+            productsImproved > 0
+              ? "good"
+              : "neutral"
+          }
+        />
+
+        <AnalyticsStatCard
+          label="Average versions"
+          value={averageVersions}
+          description="Average AI versions per product"
+        />
+
+        <AnalyticsStatCard
+          label="Last AI activity"
+          value={
+            latestActivity
+              ? `V${latestActivity.version}`
+              : "—"
+          }
+          description={
+            latestActivity
+              ? formatActivityDate(
+                  latestActivity.createdAt,
+                )
+              : "No AI content generated yet"
+          }
+        />
+      </div>
+
+      <div className="tp-analytics-bottom-grid">
+        <article className="tp-analytics-panel">
+          <div className="tp-analytics-panel__header">
+            <div>
+              <h3>
+                Most active product
+              </h3>
+
+              <p>
+                Product with the most saved
+                AI content versions.
+              </p>
+            </div>
+
+            {mostActiveProduct && (
+              <span className="tp-count-badge">
+                {mostActiveProduct.count}{" "}
+                {mostActiveProduct.count === 1
+                  ? "version"
+                  : "versions"}
+              </span>
+            )}
+          </div>
+
+          {mostActiveProduct ? (
+            <div className="tp-health-grid">
+              <HealthItem
+                label="Product"
+                value={
+                  mostActiveProduct.productTitle
+                }
+              />
+
+              <HealthItem
+                label="Versions"
+                value={
+                  mostActiveProduct.count
+                }
+              />
+
+              <HealthItem
+                label="Total products"
+                value={
+                  productsImproved
+                }
+              />
+
+              <HealthItem
+                label="Total versions"
+                value={
+                  totalVersions
+                }
+              />
+            </div>
+          ) : (
+            <div className="tp-empty-state">
+              <h3>
+                No AI activity yet
+              </h3>
+
+              <p className="tp-section-subtitle">
+                Generate AI content to start
+                building activity analytics.
+              </p>
+            </div>
+          )}
+        </article>
+
+        <article className="tp-analytics-panel">
+          <div className="tp-analytics-panel__header">
+            <div>
+              <h3>
+                Last 7 days
+              </h3>
+
+              <p>
+                Saved AI content versions by day.
+              </p>
+            </div>
+          </div>
+
+          <div className="tp-distribution-list">
+            {lastSevenDays.map(
+              (item) => (
+                <DistributionRow
+                  key={item.key}
+                  label={item.label}
+                  value={item.value}
+                  maxValue={
+                    Math.max(
+                      1,
+                      ...lastSevenDays.map(
+                        (entry) =>
+                          entry.value,
+                      ),
+                    )
+                  }
+                />
+              ),
+            )}
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+function buildAIActivityDays(
+  history,
+  numberOfDays,
+) {
+  const today =
+    new Date();
+
+  const values = [];
+
+  for (
+    let offset =
+      numberOfDays - 1;
+    offset >= 0;
+    offset -= 1
+  ) {
+    const day =
+      new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() -
+          offset,
+      );
+
+    const nextDay =
+      new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate() + 1,
+      );
+
+    const count =
+      history.filter(
+        (item) => {
+          const createdAt =
+            new Date(
+              item.createdAt,
+            );
+
+          return (
+            !Number.isNaN(
+              createdAt.getTime(),
+            ) &&
+            createdAt >= day &&
+            createdAt < nextDay
+          );
+        },
+      ).length;
+
+    values.push({
+      key:
+        day.toISOString(),
+      label:
+        new Intl.DateTimeFormat(
+          "en-IN",
+          {
+            weekday: "short",
+          },
+        ).format(day),
+      value:
+        count,
+    });
+  }
+
+  return values;
+}
+
+function formatActivityDate(
+  value,
+) {
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return "Unknown date";
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-IN",
+    {
+      dateStyle:
+        "medium",
+      timeStyle:
+        "short",
+    },
+  ).format(date);
 }
 
 /* =========================================

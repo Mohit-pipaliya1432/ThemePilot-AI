@@ -96,6 +96,10 @@ export default function App() {
           Analytics
         </s-link>
 
+        <s-link href="/app/ai-history">
+          AI History
+        </s-link>
+
         <s-link href="/app/settings">
           Settings
         </s-link>
