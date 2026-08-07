@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+model ScanHistory {
+  id                            Int      @id @default(autoincrement())
+  shop                          String
+  shopName                      String?
+  seoScore                      Int
+  totalProducts                 Int
+  totalImages                   Int
+  totalIssues                   Int
+  affectedProducts              Int
+  productsWithoutDescription    Int
+  productsWithoutSeoTitle       Int
+  productsWithoutSeoDescription Int
+  imagesWithoutAltText          Int
+  largeImages                   Int
+  pagesScanned                  Int      @default(1)
+  resultJson                    String
+  createdAt                     DateTime @default(now())
+
+  @@index([shop])
+  @@index([createdAt])
+}
+
+model AppSettings {
+  id                      Int      @id @default(autoincrement())
+  shop                    String   @unique
+
+  autoScan                Boolean  @default(false)
+  scanFrequency           String   @default("weekly")
+
+  aiTone                  String   @default("professional")
+
+  seoTitleMaxLength       Int      @default(60)
+  seoDescriptionMaxLength Int      @default(155)
+
+  autoGenerateAltText     Boolean  @default(true)
+
+  historyRetention        String   @default("90")
+
+  emailNotifications      Boolean  @default(false)
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([shop])
+}

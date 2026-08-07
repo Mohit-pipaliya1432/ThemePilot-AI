@@ -1,0 +1,252 @@
+.tp-analytics {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.tp-analytics__eyebrow {
+  margin: 0 0 6px;
+  color: #6d3df5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.tp-analytics-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.tp-analytics-stat {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #dedbe8;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(25, 18, 50, 0.04);
+}
+
+.tp-analytics-stat__label {
+  margin: 0 0 10px;
+  color: #696476;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tp-analytics-stat__value {
+  display: block;
+  margin-bottom: 8px;
+  color: #16131c;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.tp-analytics-stat__value--good {
+  color: #11834e;
+}
+
+.tp-analytics-stat__value--bad {
+  color: #c0352b;
+}
+
+.tp-analytics-stat__value--neutral {
+  color: #16131c;
+}
+
+.tp-analytics-stat__description {
+  margin: 0;
+  color: #777180;
+  font-size: 12px;
+}
+
+.tp-analytics-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.tp-analytics-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.tp-analytics-panel {
+  padding: 22px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dedbe8;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(25, 18, 50, 0.04);
+}
+
+.tp-analytics-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tp-analytics-panel__header h3 {
+  margin: 0 0 5px;
+  color: #16131c;
+  font-size: 17px;
+}
+
+.tp-analytics-panel__header p {
+  margin: 0;
+  color: #777180;
+  font-size: 12px;
+}
+
+.tp-chart-current {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  color: #4f2bd7;
+  background: #f1edff;
+  border: 1px solid #dcd2ff;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.tp-chart {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tp-chart svg {
+  display: block;
+  width: 100%;
+  min-width: 450px;
+  height: auto;
+}
+
+.tp-chart__grid {
+  stroke: #ece9f3;
+  stroke-width: 1;
+}
+
+.tp-chart__axis-text {
+  fill: #898391;
+  font-size: 10px;
+}
+
+.tp-chart__line {
+  stroke: #6d3df5;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tp-chart__point {
+  fill: #ffffff;
+  stroke: #6d3df5;
+  stroke-width: 3;
+}
+
+.tp-chart-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: #898391;
+  font-size: 10px;
+}
+
+.tp-health-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tp-health-item {
+  padding: 16px;
+  background: #f8f7fb;
+  border: 1px solid #ebe8f2;
+  border-radius: 12px;
+}
+
+.tp-health-item span {
+  display: block;
+  margin-bottom: 8px;
+  color: #777180;
+  font-size: 12px;
+}
+
+.tp-health-item strong {
+  color: #16131c;
+  font-size: 22px;
+}
+
+.tp-distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tp-distribution-row__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 7px;
+  color: #5e5966;
+  font-size: 12px;
+}
+
+.tp-distribution-row__top strong {
+  color: #16131c;
+}
+
+.tp-distribution-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  background: #eeebf5;
+  border-radius: 999px;
+}
+
+.tp-distribution-bar {
+  display: block;
+  min-width: 0;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #3e2395 0%,
+    #7448f5 100%
+  );
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+@media screen and (max-width: 1000px) {
+  .tp-analytics-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tp-analytics-chart-grid,
+  .tp-analytics-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .tp-analytics {
+    margin-top: 28px;
+    margin-bottom: 28px;
+  }
+
+  .tp-analytics-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-analytics-panel {
+    padding: 16px;
+  }
+
+  .tp-health-grid {
+    grid-template-columns: 1fr;
+  }
+}
