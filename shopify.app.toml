@@ -1,12 +1,10 @@
-# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
-
 client_id = "eb907da5ef330a5eb12927d71acfd89b"
 name = "ThemePilot AI"
-application_url = "https://shopify.dev/apps/default-app-home"
+application_url = "https://themepilot-ai.onrender.com"
 embedded = true
 
 [build]
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
 
 [webhooks]
 api_version = "2026-10"
@@ -20,7 +18,7 @@ uri = "/webhooks/app/uninstalled"
 topics = ["app/uninstalled"]
 
 [access_scopes]
-scopes = "write_products,write_files"
+scopes = "write_products,write_files,write_metaobjects,write_metaobject_definitions"
 
 [access.admin]
 embedded_app_direct_api_access = true
@@ -28,7 +26,9 @@ direct_api_mode = "online"
 
 [auth]
 redirect_urls = [
-  "https://shopify.dev/apps/default-app-home/api/auth"
+  "https://themepilot-ai.onrender.com/auth/callback",
+  "https://themepilot-ai.onrender.com/auth/shopify/callback",
+  "https://themepilot-ai.onrender.com/api/auth/callback"
 ]
 
 [product.metafields.app.demo_info]
