@@ -154,8 +154,13 @@ const settings =
 export const action = async ({
   request,
 }) => {
-  const { admin } =
+  const { admin, session } =
     await authenticate.admin(request);
+
+  const settings =
+    await getAppSettings(
+      session.shop,
+    );
 
   const formData =
     await request.formData();
