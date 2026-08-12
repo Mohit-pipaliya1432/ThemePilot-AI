@@ -22,6 +22,10 @@ topics = ["app/uninstalled"]
 [access_scopes]
 scopes = "write_products,write_files"
 
+[access.admin]
+embedded_app_direct_api_access = true
+direct_api_mode = "online"
+
 [auth]
 redirect_urls = [
   "https://shopify.dev/apps/default-app-home/api/auth"
